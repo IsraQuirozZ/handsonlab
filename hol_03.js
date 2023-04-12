@@ -22,6 +22,17 @@ class TicketManager {
     return this.events;
   }
 
+  getEventById(eventId) {
+    let foundedEvent = this.events.find((event) => event.id === eventId);
+    if (foundedEvent) {
+      console.log(foundedEvent);
+      return foundedEvent;
+    } else {
+      console.log("Not founded");
+      return null;
+    }
+  }
+
   addEvent({ name, place, price, capacity, date }) {
     capacity = capacity ?? 50;
     date = date ?? new Date();
@@ -38,6 +49,53 @@ class TicketManager {
     price = price + this.#gain * price;
     let event = { name, place, price, capacity, date, id, participants: [] };
     this.events.push(event);
+  }
+
+  addParticipant(eventId, userId, newName) {
+    let foundedEvent = this.getEventById(eventId);
+    if (foundedEvent) {
+      if (foundedEvent.capacity > foundedEvent.participants.length) {
+        let user = foundedEvent.participants.includes(userId);
+        if (user) {
+          console.log(`Ya se encuentra en la lista el usuario: ${userId}`);
+        } else {
+          console.log("Agregado usuario:" + userId);
+          foundedEvent.participants.push(userId);
+          // return userId;
+        }
+      } else {
+        console.log("No hay más capacidad");
+      }
+    }
+    // if (newName) {
+    //   foundedEvent.name = newName;
+    // }
+    return null;
+  }
+
+  editEvent(eventId, data) {
+    let foundedEvent = this.getEventById(eventId);
+    for (let property in data) {
+      foundedEvent[property] = data[property];
+    }
+  }
+
+  addNewEvent(eventId, newPlace, newDate) {
+    let searchedEvent = { ...this.getEventById(eventId) };
+    this.addEvent({
+      name: searchedEvent.name,
+      place: newPlace,
+      price: searchedEvent.price,
+      capacity: searchedEvent.capacity,
+      date: newDate,
+    });
+    console.log("Se creó el nuevo evento");
+  }
+
+  deleteEvent(eventId) {
+    let foundedEvent = this.getEventById(eventId);
+    this.events = this.events.filter((event) => event.id !== eventId);
+    console.log(`Evento: "${foundedEvent.name}" eliminado`);
   }
 }
 
@@ -73,4 +131,13 @@ ticket.addEvent({
   price: 20,
 });
 
+// ticket.getEvents();
+// ticket.getEventById(9);
+// ticket.addParticipant(1, 5);
+// ticket.addParticipant(1, 5);
+// ticket.getEventById(1);
+// ticket.addParticipant(3, 5);
+// ticket.addNewEvent(3, "Madrid", new Date("08/20/2023"));
+// ticket.deleteEvent(3);
+// ticket.editEvent(1, { name: "Isra" });
 ticket.getEvents();
