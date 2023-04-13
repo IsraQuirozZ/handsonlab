@@ -61,15 +61,12 @@ class TicketManager {
         } else {
           console.log("Agregado usuario:" + userId);
           foundedEvent.participants.push(userId);
-          // return userId;
+          return userId;
         }
       } else {
         console.log("No hay más capacidad");
       }
     }
-    // if (newName) {
-    //   foundedEvent.name = newName;
-    // }
     return null;
   }
 
