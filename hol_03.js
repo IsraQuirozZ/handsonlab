@@ -1,140 +1,116 @@
-//  Registrador de tickets de eventos
-// Definir la clase TicketManager, el cual tendrá un arreglo de eventos que iniciará vacío
-// La clase debe contar con una variable privada “gain”, que será la ganancia de un ticket (15%)
-// Debe contar con el método “getEvents” que mostrará los eventos guardados.
-// Debe contar con el método “addEvent” que recibirá los siguientes parámetros:
-// name
-// place
-// price (al cual hay que agregarle la ganancia adicional)
-// capacity (si no se da: 50 por defecto)
-// date (si no se da: hoy por defecto)
-// El método deberá crear además el campo id autoincrementable y el campo “participants” que siempre iniciará con un arreglo vacío.
+// Calculadora positiva con promesas
+// ¿Cómo lo hacemos? Se crearán un conjunto de funciones gestionadas por promesas y un entorno ASÍNCRONO
+// donde podremos ponerlas a prueba
 
-class TicketManager {
-  #gain;
-  constructor() {
-    this.events = [];
-    this.#gain = 0.15;
-  }
+// Para todas las operaciones/funciones:
+// - Debe devolver una promesa que se resuelva siempre que el resultado sea positivo.
+// - En caso de que algún número NO sea número, rechazar la promesa indicando “Solo números”
+// - En caso de que algún número sea cero, rechazar la promesa indicando “Operación innecesaria”
 
-  getEvents() {
-    console.log(this.events);
-    return this.events;
-  }
+// Definir función suma:
+// En caso de que la suma sea negativa, rechazar la promesa indicando “La calculadora sólo debe devolver valores
+// positivos” (ejemplo: 10 + (-15) = -5 debe rechazarse)
 
-  getEventById(eventId) {
-    let foundedEvent = this.events.find((event) => event.id === eventId);
-    if (foundedEvent) {
-      console.log(foundedEvent);
-      return foundedEvent;
-    } else {
-      console.log("Not founded");
-      return null;
-    }
-  }
+// Definir función resta:
+// En caso de que la resta sea negativa, rechazar la promesa indicando “La calculadora sólo debe devolver valores
+// positivos” (ejemplo: 10 - 15 = -5 debe rechazarse)
 
-  addEvent({ name, place, price, capacity, date }) {
-    capacity = capacity ?? 50;
-    date = date ?? new Date();
-    let id;
-    if (this.events.length === 0) {
-      id = 1;
-    } else {
-      // Buscar último producto del array
-      let lastEvent = this.events[this.events.length - 1];
-      // Hallar la clave id de ese elemento
-      // A ese id sumarle 1
-      id = lastEvent.id + 1;
-    }
-    price = price + this.#gain * price;
-    let event = { name, place, price, capacity, date, id, participants: [] };
-    this.events.push(event);
-  }
+// Definir una función multiplicación:
+// Si el producto es negativo, rechazar la oferta indicando “La calculadora sólo puede devolver valores positivos”
+// (ejemplo: 10 * (-15) = -150 debe rechazarse)
 
-  addParticipant(eventId, userId, newName) {
-    let foundedEvent = this.getEventById(eventId);
-    if (foundedEvent) {
-      if (foundedEvent.capacity > foundedEvent.participants.length) {
-        let user = foundedEvent.participants.includes(userId);
-        if (user) {
-          console.log(`Ya se encuentra en la lista el usuario: ${userId}`);
-        } else {
-          console.log("Agregado usuario:" + userId);
-          foundedEvent.participants.push(userId);
-          return userId;
-        }
+// Definir una función división:
+// Si la división es negativa, rechazar la oferta indicando “La calculadora sólo puede devolver valores positivos”
+// (ejemplo: 10 * (-5) = -2 debe rechazarse)
+
+// Probar con then/catch y verificar el resultado con la función de ayuda
+
+function suma(n1, n2) {
+  return new Promise((res, rej) => {
+    // Es número y es mayor a 0
+    let verificarN1 = esNumero(n1);
+    let verificarN2 = esNumero(n2);
+    // console.log(verificarN1);
+    // console.log(verificarN2);
+    if (verificarN1.number && verificarN2.number) {
+      let verificarSumMayorCero = verificarN1.number + verificarN2.number; // sumo `propiedades number de ambas verificaciones
+      if (verificarSumMayorCero > 0) {
+        return res(verificarSumMayorCero);
       } else {
-        console.log("No hay más capacidad");
+        return rej({
+          error: "La calculadora solo debe devolver valores positivos",
+        });
       }
+    } else {
+      return rej({
+        n1: verificarN1.message ?? verificarN1.number,
+        n2: verificarN2.message ?? verificarN2.number,
+      });
     }
-    return null;
-  }
+  });
+}
 
-  editEvent(eventId, data) {
-    let foundedEvent = this.getEventById(eventId);
-    for (let property in data) {
-      foundedEvent[property] = data[property];
-    }
-  }
+// Usando Sincronismo (.then / .catch)
+// suma(5, 10)
+//   .then((res) => console.log(res))
+//   .catch((err) => console.log(err));
+// suma(0, 10)
+//   .then((res) => console.log(res))
+//   .catch((err) => console.log(err));
+// suma("hola", 10)
+//   .then((res) => console.log(res))
+//   .catch((err) => console.log(err));
 
-  addNewEvent(eventId, newPlace, newDate) {
-    let searchedEvent = { ...this.getEventById(eventId) };
-    this.addEvent({
-      name: searchedEvent.name,
-      place: newPlace,
-      price: searchedEvent.price,
-      capacity: searchedEvent.capacity,
-      date: newDate,
-    });
-    console.log("Se creó el nuevo evento");
-  }
+// Usando Asincronismo (Async/Await)
+// calculos(5, 10, suma);
+// calculos(0, 10, suma);
+// calculos("chau", 1, suma);
+// calculos(8, -10, suma);
 
-  deleteEvent(eventId) {
-    let foundedEvent = this.getEventById(eventId);
-    this.events = this.events.filter((event) => event.id !== eventId);
-    console.log(`Evento: "${foundedEvent.name}" eliminado`);
+function resta(n1, n2) {
+  return new Promise((res, rej) => {
+    let verificarN1 = esNumero(n1);
+    let verificarN2 = esNumero(n2);
+    if (verificarN1.number && verificarN2.number) {
+      let resultado = verificarN1.number - verificarN2.number;
+      if (resultado > 0) {
+        return res(resultado);
+      } else {
+        return rej({
+          error: "La calculadora solo debe devolver valores positivos",
+        });
+      }
+    } else
+      return rej({
+        n1: verificarN1.message ?? verificarN1.number,
+        n2: verificarN2.message ?? verificarN2.number,
+      });
+  });
+}
+
+calculos(8, 10, resta);
+calculos("string", -10, resta);
+calculos(8, -10, resta);
+
+function esNumero(num) {
+  if (isNaN(num)) {
+    let message = "Solo números";
+    return { success: false, message };
+  } else if (num === 0) {
+    let message = "Operación innecesaria";
+    return { success: false, message };
+  } else {
+    return { success: true, number: num };
   }
 }
 
-let ticket = new TicketManager();
-
-ticket.addEvent({
-  name: "Rey León",
-  place: "Madrid",
-  price: 10,
-  capacity: 1000,
-  date: new Date("05/20/2023"),
-});
-
-ticket.addEvent({
-  name: "HP",
-  place: "London",
-  price: 15,
-  capacity: null,
-  date: new Date("10/20/2023"),
-});
-
-ticket.addEvent({
-  name: "Mamamia",
-  place: "México",
-  price: 15,
-  capacity: 1000,
-  date: undefined,
-});
-
-ticket.addEvent({
-  name: "Disney on Ice",
-  place: "México",
-  price: 20,
-});
-
-// ticket.getEvents();
-// ticket.getEventById(9);
-// ticket.addParticipant(1, 5);
-// ticket.addParticipant(1, 5);
-// ticket.getEventById(1);
-// ticket.addParticipant(3, 5);
-// ticket.addNewEvent(3, "Madrid", new Date("08/20/2023"));
-// ticket.deleteEvent(3);
-// ticket.editEvent(1, { name: "Isra" });
-ticket.getEvents();
+async function calculos(num1, num2, operacion) {
+  try {
+    let calculo = await operacion(num1, num2);
+    console.log(calculo);
+    return calculo;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+}
