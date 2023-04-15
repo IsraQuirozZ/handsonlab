@@ -27,11 +27,8 @@
 
 function suma(n1, n2) {
   return new Promise((res, rej) => {
-    // Es número y es mayor a 0
     let verificarN1 = esNumero(n1);
     let verificarN2 = esNumero(n2);
-    // console.log(verificarN1);
-    // console.log(verificarN2);
     if (verificarN1.number && verificarN2.number) {
       let verificarSumMayorCero = verificarN1.number + verificarN2.number; // sumo `propiedades number de ambas verificaciones
       if (verificarSumMayorCero > 0) {
@@ -88,9 +85,67 @@ function resta(n1, n2) {
   });
 }
 
-calculos(8, 10, resta);
-calculos("string", -10, resta);
-calculos(8, -10, resta);
+// calculos(8, 10, resta);
+// calculos("string", -10, resta);
+// calculos(8, -10, resta);
+
+// MULTIPLICACIÓN
+
+function multiplicacion(n1, n2) {
+  return new Promise((res, rej) => {
+    let verificarN1 = esNumero(n1);
+    let verificarN2 = esNumero(n2);
+    if (verificarN1.number && verificarN2.number) {
+      let resultado = verificarN1.number * verificarN2.number;
+      if (resultado > 0) {
+        return res(resultado);
+      } else {
+        return rej({
+          error: "La calculadora solo debe devolver números positivos.",
+        });
+      }
+    } else {
+      return rej({
+        n1: verificarN1.message ?? verificarN1.number,
+        n2: verificarN2.message ?? verificarN2.number,
+      });
+    }
+  });
+}
+
+// calculos(2, -3, multiplicacion);
+
+// DIVISIÓN
+
+function division(n1, n2) {
+  return new Promise((res, rej) => {
+    let verificarN1 = esNumero(n1);
+    let verificarN2 = esNumero(n2);
+    if (verificarN1.number && verificarN2.number) {
+      if (verificarN2.number === 0) {
+        return rej({ error: "No se puede dividir entre cero." });
+      }
+      let resultado = verificarN1.number / verificarN2.number;
+      if (resultado > 0) {
+        return res(resultado);
+      } else {
+        return rej({
+          error: "La calculadora solo debe devolver números positivos.",
+        });
+      }
+    } else {
+      return rej({
+        n1: verificarN1.message ?? verificarN1.number,
+        n2: verificarN2.message ?? verificarN2.number,
+      });
+    }
+  });
+}
+
+// calculos(6, 2, division);
+// calculos("hola", 2, division);
+// calculos(0, 2, division);
+// calculos(2, 0, division);
 
 function esNumero(num) {
   if (isNaN(num)) {
