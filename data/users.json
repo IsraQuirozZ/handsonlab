@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Isra",
+    "lastName": "Quiroz",
+    "age": 22,
+    "carts": [],
+    "id": 1
+  },
+  {
+    "name": "Karen",
+    "lastName": "Guzmán",
+    "age": 21,
+    "carts": [],
+    "id": 2
+  }
+]
