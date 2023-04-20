@@ -16,12 +16,8 @@ class UserManager {
         .then((res) => console.log("File created"))
         .catch((err) => console.log(err));
     } else {
-      // fs.promises
-      //   .readFile(path, "UTF-8")
-      //   .then((res) => (this.users = JSON.parse(res)))
-      //   .catch((err) => console.log(err));
-      let contenido = fs.readFileSync(path, "utf-8");
-      this.users = JSON.parse(contenido);
+      this.users = JSON.parse(fs.readFileSync(path, "utf-8"));
+      return "Data recovered";
     }
   }
 
@@ -43,16 +39,18 @@ class UserManager {
       .catch((err) => console.log(err));
   }
 
-  getUsers() {
-    console.log(this.users);
-    return this.users;
+  getUsers(quantity) {
+    quantity = quantity ?? 5;
+    let sliceUser = this.users.slice(0, quantity);
+    console.log(sliceUser);
+    return sliceUser;
   }
 
   getUserById(id) {
-    let foundedUser = this.users.find((user) => user.id === id);
-    if (foundedUser) {
-      console.log(foundedUser);
-      return foundedUser;
+    let foundUser = this.users.find((user) => user.id === id);
+    if (foundUser) {
+      console.log(foundUser);
+      return foundUser;
     } else {
       console.log(`- No se encontró un usuario con el id ${id}`);
       return null;
@@ -60,28 +58,45 @@ class UserManager {
   }
 
   updateUser(id, data) {
-    let foundedUser = this.getUserById(id);
-    if (foundedUser) {
-      for (let property in data) {
-        foundedUser[property] = data[property];
-      }
-      // BORRA EL ARCHIVO
-      fs.promises
-        .unlink(this.path)
-        .then((res) => console.log("Se elimino el archivo"))
-        .catch((err) => console.log("Ocurrió un error"));
-      // LO VOLVEMOS A CREAR CON LA INFO ACTUALIZADA
-      let dataJson = JSON.stringify(this.users, null, 2);
-      fs.promises
-        .writeFile(this.path, dataJson)
-        .then((res) => console.log("Archivo actualizado"))
-        .catch((err) => console.log(err));
+    let foundUser = this.getUserById(id);
+
+    if (!foundUser) {
+      console.log("error: not found user to update");
+      return "error: not found user to update";
     }
+    if (Object.keys(data).length === 0) {
+      console.log("error: insert some values");
+      return "error: insert some values";
+    }
+    for (let prop in data) {
+      //Verificar que la propiedad pertenece al objeto (propiedad que exista)
+      if (
+        prop !== "name" ||
+        prop !== "lastName" ||
+        prop !== "age" ||
+        prop !== "carts"
+      ) {
+        console.log(`error: "${prop}" is not a property of user`);
+        return `error: "${prop}" is not a property of user`;
+      }
+      foundUser[prop] = data[prop];
+    }
+    // BORRA EL ARCHIVO
+    fs.promises
+      .unlink(this.path)
+      .then((res) => console.log("Se elimino el archivo"))
+      .catch((err) => console.log("Ocurrió un error"));
+    // LO VOLVEMOS A CREAR CON LA INFO ACTUALIZADA
+    let dataJson = JSON.stringify(this.users, null, 2);
+    fs.promises
+      .writeFile(this.path, dataJson)
+      .then((res) => console.log("Archivo actualizado"))
+      .catch((err) => console.log(err));
   }
 
   deleteUser(id) {
-    let foundedUser = this.getUserById(id);
-    if (foundedUser) {
+    let foundUser = this.getUserById(id);
+    if (foundUser) {
       let newUsers = this.users.filter((user) => user.id !== id);
       // BORRA EL ARCHIVO
       fs.promises
@@ -94,7 +109,7 @@ class UserManager {
         .writeFile(this.path, dataJson)
         .then((res) => console.log("Archivo actualizado"))
         .catch((err) => console.log(err));
-      console.log(`Usuario: "${foundedUser.name}" eliminado`);
+      console.log(`Usuario: "${foundUser.name}" eliminado`);
     }
   }
 }
@@ -104,7 +119,7 @@ let manager = new UserManager("./data/users.json");
 // manager.addUser({ name: "Karen", lastName: "Guzmán", age: 21, carts: [] });
 // manager.addUser({ name: "Kike", lastName: "Ozuna", age: 21, carts: [] });
 
-// manager.getUsers();
-// manager.getUserById(1);
-// manager.updateUser(1, { name: "Isra" });
-manager.deleteUser(3);
+manager.getUsers();
+// manager.getUserById(3);
+// manager.updateUser(1, { nombre: "Isra" });
+// manager.deleteUser(4);

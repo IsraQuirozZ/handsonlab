@@ -12,5 +12,12 @@
     "age": 21,
     "carts": [],
     "id": 2
+  },
+  {
+    "name": "Kike",
+    "lastName": "Ozuna",
+    "age": 21,
+    "carts": [],
+    "id": 3
   }
 ]
