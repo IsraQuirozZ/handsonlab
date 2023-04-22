@@ -120,6 +120,14 @@ let manager = new UserManager("./data/users.json");
 // manager.addUser({ name: "Kike", lastName: "Ozuna", age: 21, carts: [] });
 
 manager.getUsers();
-// manager.getUserById(3);
-// manager.updateUser(1, { nombre: "Isra" });
-// manager.deleteUser(4);
+manager.getUserById(3);
+manager.updateUser(1, { nombre: "Israel" });
+manager.deleteUser(3);
+manager.deleteUser(4);
+
+// Al ejecutarse el programa devolverá por consola:
+// Todos los usuarios (3)
+// El usuario con el Id (3)
+// En el archivo "users.json" se modificará el usuario con el id 1
+// En el archivo "users.json" se eliminará el usuario con id 3
+// En consola mostrará un error de que no existe el usuario con el id 4
